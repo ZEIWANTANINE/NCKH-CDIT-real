@@ -9,20 +9,23 @@ const authMiddleware = async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-
+  console.log("Token:", token);
+  
   try {
     // Giải mã token để lấy userId (không xác thực chữ ký ở bước này)
     const decoded = jwt.decode(token);
+    console.log("Token đã giải mã:", decoded);
     if (!decoded || !decoded.userId) {
       return res.status(401).json({ error: "Token không hợp lệ" });
     }
 
     // Truy vấn cơ sở dữ liệu để lấy jwtSecret của người dùng
     const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    console.log("jwtSecret từ cơ sở dữ liệu:", user.jwtSecret);
     if (!user) {
       return res.status(401).json({ error: "Người dùng không tồn tại" });
     }
-
+    
     // Xác thực token bằng jwtSecret của người dùng
     jwt.verify(token, user.jwtSecret);
 

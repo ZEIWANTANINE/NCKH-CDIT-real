@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { getUsers } from "../../utils/api";
 import Pagination from "../../components/Pagniation";
 import AdminLayout from "../AdminLayout";
-
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +23,7 @@ export default function UsersPage() {
     const fetchUsers = async () => {
       try {
         const data = await getUsers(currentPage);
-        console.log("Dữ liệu người dùng:", data);
+        console.log("Dữ liệu người dùng:32131", data); // Log dữ liệu trả về từ API
         setUsers(data.users || []);
         setTotalPages(data.totalPages || 1);
       } catch (err) {
@@ -42,37 +41,34 @@ export default function UsersPage() {
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl font-bold mb-4">Danh sách người dùng</h1>
+      <h1 className="text-2xl font-bold mb-4">Danh sách thành viên hội đồng</h1>
       <table className="table-auto w-full border-collapse border border-gray-300">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">Email</th>
-            <th className="border border-gray-300 px-4 py-2">Mật khẩu</th>
+            <th className="border border-gray-300 px-4 py-2">Mã thành viên</th>
+            <th className="border border-gray-300 px-4 py-2">Tên thành viên</th>
+            <th className="border border-gray-300 px-4 py-2">Mã hội đồng</th>
+            <th className="border border-gray-300 px-4 py-2">Tên hội đồng</th>
+            <th className="border border-gray-300 px-4 py-2">Mã trình độ học vấn</th>
+            <th className="border border-gray-300 px-4 py-2">Tên trình độ học vấn</th>
             <th className="border border-gray-300 px-4 py-2">Vai trò</th>
-            <th className="border border-gray-300 px-4 py-2">Ngày tạo</th>
+            <th className="border border-gray-300 px-4 py-2">Loại thành viên</th>
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(users) && users.length === 0 ? (
-            <tr>
-              <td colSpan={5} className="text-center py-4">
-                Không có dữ liệu
-              </td>
+          {users.map((user: any) => (
+            <tr key={user.id}>
+              <td className="border border-gray-300 px-4 py-2">{user.id}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.name}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.councilId}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.councilName}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.educationLevelId}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.educationLevelName}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+              <td className="border border-gray-300 px-4 py-2">{user.memberType}</td>
+              
             </tr>
-          ) : (
-            users.map((user: any) => (
-              <tr key={user.id}>
-                <td className="border border-gray-300 px-4 py-2">{user.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-                <td className="border border-gray-300 px-4 py-2">{user.password || "N/A"}</td>
-                <td className="border border-gray-300 px-4 py-2">{user.role}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
       <div className="mt-4">

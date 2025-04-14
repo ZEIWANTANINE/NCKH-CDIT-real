@@ -14,9 +14,17 @@ exports.register = async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const jwtSecret = uuidv4();
+    console.log("jwtSecret khi đăng ký:", jwtSecret);
     const newUser = await prisma.user.create({
       data: { email, password: hashedPassword, role, jwtSecret },
     });
+    const token = jwt.sign(
+      { userId: newUser.id, role: newUser.role },
+      jwtSecret,
+      { expiresIn: "1d" }
+    );
+    res.json({ message: "Đăng ký thành công!", userId: newUser.id,token });
+    console.log("New User ID:", newUser.id);
     // Thêm thông tin bổ sung vào bảng tương ứng
     if (role === "TEACHER" && additionalInfo) {
       await prisma.teacher.create({
@@ -26,13 +34,7 @@ exports.register = async (req, res) => {
       await prisma.researcher.create({
         data: { userId: newUser.id, ...additionalInfo },
       });
-    } else if (role === "ADMIN" && additionalInfo) {
-      await prisma.admin.create({
-        data: { userId: newUser.id, ...additionalInfo },
-      });
-    }
-    res.json({ message: "Đăng ký thành công!", userId: newUser.id });
-    console.log("New User ID:", newUser.id);
+    } 
 console.log("Additional Info:", additionalInfo);
   } catch (error) {
     console.error("Lỗi đăng ký:", error);
@@ -55,7 +57,7 @@ exports.login = async (req, res) => {
   
       const token = jwt.sign(
         { userId: user.id, role: user.role },
-        user.jwtSecret, 
+        user.jwtSecret,
         { expiresIn: "1d" }
       );
       let hasDetails = false;
@@ -106,8 +108,11 @@ exports.login = async (req, res) => {
     try {
       const {sTenNhaNghienCuu, sDonViCongTac, sMaTrinhDoHocVan, sChucVu, sGioiTinh, sQuyenHan } = req.body;
       const userId = req.user.id;
+      console.log("User ID từ middleware:", userId);
+    console.log("Dữ liệu nhận được từ frontend:", req.body);
       // Kiểm tra xem user có tồn tại và có role là RESEARCHER không
       const user = await prisma.user.findUnique({ where: { id: userId } });
+      console.log("Thông tin người dùng từ database:", user);
       if (!user || user.role !== "RESEARCHER") {
         return res.status(400).json({ error: "Người dùng không hợp lệ hoặc không phải RESEARCHER" });
       }
@@ -124,10 +129,36 @@ exports.login = async (req, res) => {
           sQuyenHan,
         },
       });
-  
-      res.json({ message: "Thêm thông tin RESEARCHER thành công!", researcher });
+      const newToken = jwt.sign(
+        { userId: user.id, role: user.role },
+        user.jwtSecret,
+        { expiresIn: "1d" }
+      );
+      res.json({ message: "Thêm thông tin RESEARCHER thành công!", researcher,token:newToken });
     } catch (error) {
       console.error("Lỗi thêm thông tin RESEARCHER:", error);
       res.status(500).json({ error: "Lỗi thêm thông tin RESEARCHER!" });
+    }
+  };
+  exports.getUserInfo = async (req, res) => {
+    try {
+      const userId = req.user.id; // Lấy userId từ middleware
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+        },
+      });
+  
+      if (!user) {
+        return res.status(404).json({ error: "Người dùng không tồn tại" });
+      }
+  
+      res.json(user);
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin người dùng:", error);
+      res.status(500).json({ error: "Không thể lấy thông tin người dùng" });
     }
   };

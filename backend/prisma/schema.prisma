@@ -51,3 +51,135 @@ model Admin {
   sTenQuanTriVien String
   user            User   @relation(fields: [userId], references: [id])
 }
+model DeTai {
+  sMaDeTai          String      @id
+  sTenDeTai         String
+  sLinhVuc          String
+  sMaLoaiDeTai      String
+  sMaNhaNghienCuu   String
+  sTrangThai        String
+  sMoTa             String?
+  dNgayBatDau       DateTime
+  dNgayKetThuc      DateTime
+  sLoaiToChuc       String
+
+  loaiToChuc        LoaiToChuc @relation("LoaiToChucToDeTai", fields: [sLoaiToChuc], references: [sLoaiToChuc], map: "FK_DeTai_LoaiToChuc")
+  loaiDeTai         LoaiDeTai  @relation("LoaiDeTaiToDeTai", fields: [sMaLoaiDeTai], references: [sMaLoaiDeTai], map: "FK_DeTai_LoaiDeTai")
+}
+
+model LoaiToChuc {
+  sLoaiToChuc       String   @id
+  sTenLoaiToChuc    String
+  sMoTa             String?
+  detais            DeTai[] @relation("LoaiToChucToDeTai")
+}
+
+model LoaiDeTai {
+  sMaLoaiDeTai      String   @id
+  sTenLoaiDeTai     String
+  sMoTa             String?
+  detais            DeTai[] @relation("LoaiDeTaiToDeTai")
+}
+
+model BaoCaoThongKe {
+  sMaBaoCao         String       @id
+  sLoaiBaoCao       String
+  dNgayTao          DateTime
+
+  loaiBaoCao        LoaiBaoCao   @relation(fields: [sLoaiBaoCao], references: [sLoaiBaoCao], map: "FK_BaoCao_LoaiBaoCao")
+}
+
+model LoaiBaoCao {
+  sLoaiBaoCao       String           @id
+  sTenLoaiBaoCao    String
+  sMoTa             String?
+  baoCaos           BaoCaoThongKe[]  @relation
+}
+
+
+model ChiTietBaoCaoThongKe {
+  sMaChiTietBaoCao  String  @id
+  sMaBaoCao         String
+  sNoiDung          String
+  fGiaTri           Float
+  sMaDoiTuongThongKe String
+}
+
+model DoiTuongThongKe {
+  sMaDoiTuongThongKe String  @id
+  sTenDoiTuongThongKe String
+  sMoTa              String
+}
+
+model ThanhVienHoiDong {
+  sMaThanhVien       String  @id
+  sTenThanhVien      String
+  sMaHoiDongKhoaHoc  String
+  sMaTrinhDoHocVan   String
+  sLoaiThanhVien     String
+  sVaiTro            String
+}
+
+model DanhGiaDeTai {
+  sMaDanhGia         String  @id
+  sMaHoiDong         String
+  sMaDeTai           String
+  sMaThanhVien       String
+  dNgayDanhGia       DateTime
+  sNhanXet           String?
+  iDiemSo            Int
+  
+}
+
+model HoiDongKhoaHoc {
+  sMaHoiDong         String  @id
+  sTenHoiDong        String
+  sChucNang          String
+  sDanhGia           String
+  sLoaiToChuc        String
+}
+
+model SuKien {
+  sMaSuKien          String  @id
+  sTenSuKien         String
+  dThoiGian          DateTime
+  sDiaDiem           String
+  sNoiDung           String
+  sTenDienGia        String
+  sKinhPhi           String
+  sMaLoaiSuKien      String
+  sMaLoaiToChuc      String
+}
+
+model LoaiSuKien {
+  sMaLoaiSuKien      String  @id
+  sTenLoaiSuKien     String
+  sMoTa              String
+}
+
+model SinhVien {
+  sMaSinhVien        String  @id
+  sTenSinhVien       String
+  sGioiTinh          String
+  sEmail             String
+  sNganhHoc          String
+  sNienKhoa          String
+  sMaTrinhDoHocVan   String
+  sQuyenHan          String
+}
+
+model TaiLieu {
+  sMaLoaiTaiLieu     String  @id
+  sTenTaiLieu        String
+  sTenTacGia         String
+  dNgayXuatBan       DateTime
+  sLinhVuc           String
+  sMaDeTai           String
+  sMaLoaiDeTai       String
+}
+
+model TrinhDoHocVan {
+  sMaTrinhDoHocVan   String  @id
+  sTenTrinhDoHocVan  String
+  sMoTa              String
+}

@@ -4,6 +4,9 @@ const PORT = 4000;
 const { connectDB } = require('./config/db');
 const authRoutes = require("./routes/authRoute");
 const userRoutes = require("./routes/userRoute");
+const topicRoutes = require("./routes/topicRoute");
+const tailieuRoute = require("./routes/tailieuRoute");
+const sukienRoute = require("./routes/sukienRoute");
 const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -15,6 +18,9 @@ app.get('/', (req, res) => {
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
+app.use("/topics", topicRoutes);
+app.use("/tailieu", tailieuRoute);
+app.use("/sukien", sukienRoute);
 const listEndpoints = require('express-list-endpoints');
 
 console.log('Các route hiện có trong server:');

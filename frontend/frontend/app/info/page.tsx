@@ -145,20 +145,12 @@ export default function UserInfoPage() {
                 className="border border-gray-300 p-2 w-full"
               />
             </label>
+            
             <label className="block mb-2">
             Mã trình độ học vấn:
             <input
               type="text"
               name="sMaTrinhDoHocVan"
-              onChange={handleChange}
-              className="border border-gray-300 p-2 w-full"
-            />
-          </label>
-          <label className="block mb-2">
-            Đơn vị:
-            <input
-              type="text"
-              name="sDonVi"
               onChange={handleChange}
               className="border border-gray-300 p-2 w-full"
             />
